@@ -54,20 +54,41 @@ class HBNBCommand(cmd.Cmd):
                 new_dict[key] = value
         return new_dict
 
-    def do_create(self, arg):
-        """Creates a new instance of a class"""
-        args = arg.split()
-        if len(args) == 0:
-            print("** class name missing **")
-            return False
-        if args[0] in classes:
-            new_dict = self._key_value_parser(args[1:])
-            instance = classes[args[0]](**new_dict)
+   def do_create(self, arg):
+    """Create a new object with given parameters"""
+    args = arg.split()
+    if not args:
+        print("** class name missing **")
+        return
+    class_name = args[0]
+    if class_name not in HBNBCommand.classes:
+        print("** class doesn't exist **")
+        return
+    
+    kwargs = {}
+    for param in args[1:]:
+        if "=" not in param:
+            continue
+        key, value = param.split("=")
+        key = key.replace("_", " ")  # Replace underscores with spaces
+        if value.startswith('"') and value.endswith('"'):
+            value = value[1:-1].replace("\\\"", "\"")  # Unescape double quotes
+        elif '.' in value:
+            try:
+                value = float(value)
+            except ValueError:
+                continue
         else:
-            print("** class doesn't exist **")
-            return False
-        print(instance.id)
-        instance.save()
+            try:
+                value = int(value)
+            except ValueError:
+                continue
+        kwargs[key] = value
+    
+    new_instance = HBNBCommand.classes[class_name](**kwargs)
+    storage.save()
+    print(new_instance.id)
+
 
     def do_show(self, arg):
         """Prints an instance as a string based on the class and id"""
