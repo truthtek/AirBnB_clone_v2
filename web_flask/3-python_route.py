@@ -1,37 +1,40 @@
 #!/usr/bin/python3
 
+"""Flask Web Application"""
 
-"""utilizing Flask for Web app frame work"""
 from flask import Flask, escape
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
-
 @app.route("/")
 def home():
-    """method that defines '/' route for Flask web application"""
+    """Route for the home page"""
     return "Hello HBNB!"
-
 
 @app.route("/hbnb")
 def hbnb():
-    """method that defines '/hbnb' route"""
+    """Route for the HBNB page"""
     return "HBNB"
-
 
 @app.route('/c/<text>')
 def show_text(text):
-    """method that defines '/c/' route that uses a variable"""
+    """Route for displaying text with replaced underscores"""
     return 'C {}'.format(text.replace('_', ' '))
-
 
 @app.route('/python/')
 @app.route('/python/<text>')
 def show_text2(text="is cool"):
-    """method that defines '/python/' route that uses a variable"""
+    """Route for displaying Python text with replaced underscores"""
     return 'Python {}'.format(text.replace('_', ' '))
 
+@app.errorhandler(404)
+def page_not_found(error):
+    """Custom 404 error handler"""
+    return "Not Found", 404
 
 if __name__ == "__main__":
-    app.run(host="localhost", port=5000)
+    try:
+        app.run(host="0.0.0.0", port=5000)
+    except KeyboardInterrupt:
+        print("Server stopped")
