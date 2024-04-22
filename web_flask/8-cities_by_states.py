@@ -1,26 +1,26 @@
 #!/usr/bin/python3
-
-
-"""utilizing Flask for Web app frame work"""
-
+""" Starts a Flask web app """
 from flask import Flask, render_template
-from models import storage, State
-from flask import escape
+from models import storage
+from models.state import State
 
 app = Flask(__name__)
-
-
-@app.route('/cities_by_states', strict_slashes=False)
-def show_cities():
-    '''Dictionary: of Cities'''
-    city_dict = storage.all(State)
-    return render_template('8-cities_by_states.html', city_dict=city_dict)
+app.url_map.strict_slashes = False
 
 
 @app.teardown_appcontext
-def teardown_db(self):
-    '''Deletes the current session'''
+def dispose(exception):
+    """ Remove current session """
     storage.close()
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+
+@app.route('/cities_by_states')
+def states():
+    """ Display list of all the states """
+    states = storage.all(State)
+    states_list = list(states.values())
+    return render_template('8-cities_by_states.html', states=states_list)
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)

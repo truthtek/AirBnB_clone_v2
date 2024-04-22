@@ -1,47 +1,27 @@
 #!/usr/bin/python3
-
-
-"""utilizing Flask for Web app frame work"""
-
+""" Starts a Flask web app """
 from flask import Flask, render_template
-from models import storage, State, City
+from models import storage
+from models.state import State
 
 app = Flask(__name__)
-
-
-@app.route('/states', strict_slashes=False)
-@app.route('/states/<state_id>', strict_slashes=False)
-def show_states(state_id=None):
-    """Dictionary of states"""
-
-    city_list = []
-    all_cities = storage.all(City)
-    all_states = storage.all(State)
-    single_state = None
-
-    if state_id is None:
-        return render_template('9-states.html', state_id=state_id,
-                               all_states=all_states)
-
-    else:
-
-        for key, value in all_cities.items():
-
-            if value.__dict__.get('state_id') == state_id:
-                city_list.append(value)
-
-        for key, value in all_states.items():
-            if value.__dict__.get('id') == state_id:
-                single_state = value
-
-        return render_template('9-states.html', city_list=city_list,
-                               single_state=single_state, state_id=state_id)
+app.url_map.strict_slashes = False
 
 
 @app.teardown_appcontext
-def teardown_db(self):
-    '''Deletes the current session'''
+def dispose(exception):
+    """ Remove current session """
     storage.close()
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+
+@app.route('/states/')
+@app.route('/states/<id>')
+def states_and_state(id=None):
+    """ Display list of all the states """
+    if id:
+        id = 'State.{}'.format(id)
+    return render_template('9-states.html', states=storage.all(State), id=id)
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
