@@ -1,40 +1,36 @@
 #!/usr/bin/python3
-
-"""Flask Web Application"""
-
-from flask import Flask, escape
-
+""" Starts a Flask web application """
+from flask import Flask
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
-@app.route("/")
-def home():
-    """Route for the home page"""
-    return "Hello HBNB!"
 
-@app.route("/hbnb")
+@app.route('/')
+def hello_hbnb():
+    """ Function that sys Hello Hbnb"""
+    return 'Hello HBNB!'
+
+
+@app.route('/hbnb')
 def hbnb():
-    """Route for the HBNB page"""
-    return "HBNB"
+    """ Function that says hbnb """
+    return 'HBNB'
+
 
 @app.route('/c/<text>')
-def show_text(text):
-    """Route for displaying text with replaced underscores"""
-    return 'C {}'.format(text.replace('_', ' '))
+def c_compliment(text):
+    """ Display a message starting with C """
+    message = text.replace('_', ' ')
+    return 'C %s' % message
+
 
 @app.route('/python/')
 @app.route('/python/<text>')
-def show_text2(text="is cool"):
-    """Route for displaying Python text with replaced underscores"""
-    return 'Python {}'.format(text.replace('_', ' '))
+def python_compliment(text='is_cool'):
+    """ Display a message starting with Python """
+    message = text.replace('_', ' ')
+    return 'Python %s' % message
 
-@app.errorhandler(404)
-def page_not_found(error):
-    """Custom 404 error handler"""
-    return "Not Found", 404
 
-if __name__ == "__main__":
-    try:
-        app.run(host="0.0.0.0", port=5000)
-    except KeyboardInterrupt:
-        print("Server stopped")
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
